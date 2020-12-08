@@ -69,3 +69,9 @@ def move_board_pieces(board, board_size, square_size):
 			item = board[y][x]
 			if item is not None:
 				item.goto(piece_start_x + square_size * x, piece_start_y - square_size * y)
+
+
+def draw_turn_indicator(trtl, is_blacks_turn, font, pos):
+	trtl.clear()
+	trtl.goto(pos[0], (pos[1]) * (-1 if is_blacks_turn else 1) - font[1]*1.5)
+	trtl.write(f"{'Black' if is_blacks_turn else 'White'}'s Turn", align='center', font=font)
