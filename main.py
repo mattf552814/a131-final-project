@@ -9,4 +9,7 @@ board_size = 600
 
 util.draw_board(board_turtle, board_size)
 
+board = util.create_full_board(win)
+util.move_board_pieces(board, board_size, board_size / 8)
+
 win.mainloop()
