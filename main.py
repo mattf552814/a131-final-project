@@ -22,6 +22,15 @@ board_size = 600
 util.draw_board(board_turtle, board_size)
 
 board = util.create_full_board(win)
+taken_pieces = {color: {shape: 0 for shape in util.shapes} for color in util.colors}
 util.move_board_pieces(board, board_size, board_size / 8)
+
+indicators_writer = turtle.Turtle()
+indicators_writer.hideturtle()
+indicators_writer.up()
+taken_indicators = util.create_taken_piece_indicator(win)
+
+util.move_piece_indicators(board_size, taken_indicators)
+util.update_piece_indicators(indicators_writer, ('PT Sans', 10, 'normal'), taken_pieces, taken_indicators)
 
 win.mainloop()
