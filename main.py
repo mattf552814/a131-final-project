@@ -10,6 +10,8 @@ is_blacks_turn = False  # false means it's white's turn
 FONT_SIZE = 20
 FONT = ('PT Sans', FONT_SIZE, 'normal')
 
+util.register_piece_shapes(win)
+
 turn_indicator = turtle.Turtle()
 turn_indicator.hideturtle()
 turn_indicator.up()

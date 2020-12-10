@@ -7,6 +7,12 @@ shapes = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn']
 end_rows = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook']
 
 
+def register_piece_shapes(screen):
+	for color in colors:
+		for shape in shapes:
+			screen.register_shape(str(Path('pieces') / color / f'{shape}.gif'))
+
+
 def draw_board(trtl, board_size):
 	trtl.showturtle()
 	for border_size in [board_size / 2 + 20, board_size / 2 + 10]:
@@ -44,9 +50,7 @@ def draw_board(trtl, board_size):
 
 
 def create_piece(screen, color, shape):
-	image_path = str(Path('pieces') / color / f'{shape}.gif')
-	screen.register_shape(image_path)
-	trtl = turtle.Turtle(shape=image_path)
+	trtl = turtle.Turtle(shape=str(Path('pieces') / color / f'{shape}.gif'))
 	trtl.up()
 	return trtl
 
