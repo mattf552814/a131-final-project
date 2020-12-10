@@ -2,7 +2,7 @@ import turtle
 from pathlib import Path
 
 colors = ['dark', 'light']
-shapes = ['bishop', 'king', 'knight', 'pawn', 'queen', 'rook']
+shapes = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn']
 
 end_rows = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook']
 
