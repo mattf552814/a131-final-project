@@ -40,7 +40,12 @@ def draw_board(trtl, board_size):
 		trtl.seth(0)
 		trtl.color('black')
 		trtl.begin_fill()
-		instrs = [False, True, False, False, True, True, False, False, True, True, False, False, True, True, False, True, True, True, False, False, True, True, False, False, True, True, False, False, True, True, False, True]
+		instrs = [
+			False, True, False, False, True, True, False, False, True, True,
+			False, False, True, True, False, True, True, True, False, False,
+			True, True, False, False, True, True, False, False, True, True,
+			False, True
+		]
 		for instr in instrs:
 			if instr: trtl.rt(90)
 			else: trtl.lt(90)
@@ -81,7 +86,7 @@ def move_board_pieces(board, board_size, square_size):
 
 def draw_turn_indicator(trtl, is_blacks_turn, font, pos):
 	trtl.clear()
-	trtl.goto(pos[0], (pos[1]) * (-1 if is_blacks_turn else 1) - font[1]*1.5)
+	trtl.goto(pos[0], (pos[1]) * (-1 if is_blacks_turn else 1) - font[1] * 1.5)
 	trtl.write(f"{'Black' if is_blacks_turn else 'White'}'s Turn", align='center', font=font)
 
 
