@@ -8,6 +8,7 @@ end_rows = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'ro
 
 
 def draw_board(trtl, board_size):
+	trtl.showturtle()
 	for border_size in [board_size / 2 + 20, board_size / 2 + 10]:
 		trtl.up()
 		trtl.goto(-border_size, -border_size)
@@ -39,3 +40,32 @@ def draw_board(trtl, board_size):
 			else: trtl.lt(90)
 			trtl.forward(square_size)
 		trtl.end_fill()
+	trtl.hideturtle()
+
+
+def create_piece(screen, color, shape):
+	image_path = str(Path('pieces') / color / f'{shape}.gif')
+	screen.register_shape(image_path)
+	trtl = turtle.Turtle(shape=image_path)
+	trtl.up()
+	return trtl
+
+
+def create_full_board(screen):
+	return [
+		[create_piece(screen, 'light', piece) for piece in end_rows],
+		[create_piece(screen, 'light', 'pawn') for _ in range(8)]
+	] + ([[None] * 8] * 4) + [
+		[create_piece(screen, 'dark', 'pawn') for _ in range(8)],
+		[create_piece(screen, 'dark', piece) for piece in end_rows]
+	]
+
+
+def move_board_pieces(board, board_size, square_size):
+	piece_start_x = -0.5 * (board_size - square_size)
+	piece_start_y = -piece_start_x
+	for y in range(8):
+		for x in range(8):
+			item = board[y][x]
+			if item is not None:
+				item.goto(piece_start_x + square_size * x, piece_start_y - square_size * y)
