@@ -2,9 +2,15 @@ import turtle
 from pathlib import Path
 
 colors = ['dark', 'light']
-shapes = ['bishop', 'king', 'knight', 'pawn', 'queen', 'rook']
+shapes = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn']
 
 end_rows = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook']
+
+
+def register_piece_shapes(screen):
+	for color in colors:
+		for shape in shapes:
+			screen.register_shape(str(Path('pieces') / color / f'{shape}.gif'))
 
 
 def draw_board(trtl, board_size):
@@ -44,9 +50,7 @@ def draw_board(trtl, board_size):
 
 
 def create_piece(screen, color, shape):
-	image_path = str(Path('pieces') / color / f'{shape}.gif')
-	screen.register_shape(image_path)
-	trtl = turtle.Turtle(shape=image_path)
+	trtl = turtle.Turtle(shape=str(Path('pieces') / color / f'{shape}.gif'))
 	trtl.up()
 	return trtl
 
@@ -59,6 +63,10 @@ def create_full_board(screen):
 		[create_piece(screen, 'dark', 'pawn') for _ in range(8)],
 		[create_piece(screen, 'dark', piece) for piece in end_rows]
 	]
+
+
+def create_taken_piece_indicator(screen):
+	return {color: {shape: create_piece(screen, color, shape) for shape in filter(lambda x: x != 'king', shapes)} for color in colors}
 
 
 def move_board_pieces(board, board_size, square_size):
@@ -75,3 +83,24 @@ def draw_turn_indicator(trtl, is_blacks_turn, font, pos):
 	trtl.clear()
 	trtl.goto(pos[0], (pos[1]) * (-1 if is_blacks_turn else 1) - font[1]*1.5)
 	trtl.write(f"{'Black' if is_blacks_turn else 'White'}'s Turn", align='center', font=font)
+
+
+def move_piece_indicators(board_size, indicators):
+	y_cor = board_size / 2 + 150
+	step = (board_size / 1.5) / (len(shapes) - 1)  # exclude king
+	start = -board_size / 3 + step / 2
+	for i, piece in enumerate(indicators['light']):
+		indicators['light'][piece].goto(start + (i * step), -y_cor)
+		indicators['dark'][piece].goto(start + (i * step), y_cor)
+
+
+def update_piece_indicators(writer, font, taken_pieces, indicators):
+	writer.clear()
+	for piece in indicators['light']:
+		x, y = indicators['light'][piece].pos()
+		writer.goto(x, y - 40 - font[1] * 1.5)  # vertically center
+		writer.write(taken_pieces['light'][piece], move=False, align='center', font=font)
+	for piece in indicators['dark']:
+		x, y = indicators['dark'][piece].pos()
+		writer.goto(x, y + 40 - font[1] * 1.5)  # vertically center
+		writer.write(taken_pieces['dark'][piece], move=False, align='center', font=font)
