@@ -1,4 +1,5 @@
 import util
+import logic
 import turtle
 
 win = turtle.Screen()
@@ -32,5 +33,10 @@ taken_indicators = util.create_taken_piece_indicator(win)
 
 util.move_piece_indicators(board_size, taken_indicators)
 util.update_piece_indicators(indicators_writer, ('PT Sans', 10, 'normal'), taken_pieces, taken_indicators)
+
+win.register_shape('selection.gif')
+selection_indicator = turtle.Turtle(shape='selection.gif')
+selection_indicator.hideturtle()
+selection_indicator.up()
 
 win.mainloop()
