@@ -39,4 +39,5 @@ selection_indicator = turtle.Turtle(shape='selection.gif')
 selection_indicator.hideturtle()
 selection_indicator.up()
 
+win.listen()
 win.mainloop()
