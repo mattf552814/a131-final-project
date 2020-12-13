@@ -64,7 +64,7 @@ def create_full_board(screen):
 	return [
 		[create_piece(screen, 'light', piece) for piece in end_rows],
 		[create_piece(screen, 'light', 'pawn') for _ in range(8)]
-	] + ([[None] * 8] * 4) + [
+	] + [[None for __ in range(8)] for _ in range(4)] + [
 		[create_piece(screen, 'dark', 'pawn') for _ in range(8)],
 		[create_piece(screen, 'dark', piece) for piece in end_rows]
 	]
