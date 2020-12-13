@@ -81,7 +81,7 @@ def move_is_valid(turtle_arr, from_pos, to_pos):
 		if x_diff == 0:  # non-capture
 			if y_diff == (1 if is_light else -1):  # normal move
 				return dest_empty  # only valid for non-capturing moves
-			elif y_diff == (2 if is_light else -2):  # double jump at start
+			elif y_diff == (2 if is_light else -2) and from_y == (1 if is_light else 6):  # double jump at start
 				return dest_empty and piece_arr[to_y - (1 if is_light else -1)][to_x] is None  # can't jump or capture
 			return False  # fall through
 		elif abs(x_diff) == 1 and not dest_empty:  # capture
