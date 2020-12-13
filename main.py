@@ -36,6 +36,7 @@ util.update_piece_indicators(indicators_writer, ('PT Sans', 10, 'normal'), taken
 
 win.register_shape('selection.gif')
 selection_indicator = turtle.Turtle(shape='selection.gif')
+selection_indicator.speed(0)
 selection_indicator.hideturtle()
 selection_indicator.up()
 
