@@ -62,6 +62,7 @@ def click_handler(x, y):
 				killed_piece.goto(taken_indicators[killed_color][killed_piece_name].pos())
 				killed_piece.hideturtle()
 				taken_pieces[killed_color][killed_piece_name] += 1
+				util.update_piece_indicators(indicators_writer, ('PT Sans', 10, 'normal'), taken_pieces, taken_indicators)
 			else:
 				util.move_board_pieces(board, board_size, board_size / 8)
 			is_blacks_turn = not is_blacks_turn
