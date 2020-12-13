@@ -109,3 +109,13 @@ def update_piece_indicators(writer, font, taken_pieces, indicators):
 		x, y = indicators['dark'][piece].pos()
 		writer.goto(x, y + 40 - font[1] * 1.5)  # vertically center
 		writer.write(taken_pieces['dark'][piece], move=False, align='center', font=font)
+
+
+def update_selection(trtl, coord, board_size):
+	if coord is None:
+		trtl.hideturtle()
+	else:
+		board_edge = board_size / 2
+		square_size = board_size / 8
+		trtl.goto(-board_edge + (coord[0] + 0.5) * square_size, board_edge - (coord[1] + 0.5) * square_size)
+		trtl.showturtle()
