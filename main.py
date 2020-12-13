@@ -42,7 +42,7 @@ selection_indicator.up()
 
 
 def click_handler(x, y):
-	global selection_indicator, board, is_blacks_turn
+	global selection_indicator, board, is_blacks_turn, taken_pieces
 	board_edge = board_size / 2
 	square_size = board_size / 8
 	if x <= board_edge and x >= -board_edge and y <= board_edge and y >= -board_edge:
@@ -55,7 +55,15 @@ def click_handler(x, y):
 			board_size)
 		if ret is not None:  # a move was made
 			killed_piece, board = ret
-			util.move_board_pieces(board, board_size, board_size / 8)
+			if killed_piece is not None:
+				util.move_board_pieces(board, board_size, board_size / 8)
+				killed_color = logic.convert_file_to_color(killed_piece.shape())
+				killed_piece_name = logic.convert_file_to_name(killed_piece.shape())
+				killed_piece.goto(taken_indicators[killed_color][killed_piece_name].pos())
+				killed_piece.hideturtle()
+				taken_pieces[killed_color][killed_piece_name] += 1
+			else:
+				util.move_board_pieces(board, board_size, board_size / 8)
 			is_blacks_turn = not is_blacks_turn
 			util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
 win.onclick(click_handler)  # noqa: E305 (two lines around top-level defs) - ↓
