@@ -36,8 +36,30 @@ util.update_piece_indicators(indicators_writer, ('PT Sans', 10, 'normal'), taken
 
 win.register_shape('selection.gif')
 selection_indicator = turtle.Turtle(shape='selection.gif')
+selection_indicator.speed(0)
 selection_indicator.hideturtle()
 selection_indicator.up()
+
+
+def click_handler(x, y):
+	global selection_indicator, board, is_blacks_turn
+	board_edge = board_size / 2
+	square_size = board_size / 8
+	if x <= board_edge and x >= -board_edge and y <= board_edge and y >= -board_edge:
+		ret = logic.onclick(
+			selection_indicator,
+			is_blacks_turn,
+			board,
+			int((x + board_edge) // square_size),
+			min(7, int((-y + board_edge) // square_size)),  # y calculation sometimes returns 8, so max out at 7
+			board_size)
+		if ret is not None:  # a move was made
+			killed_piece, board = ret
+			util.move_board_pieces(board, board_size, board_size / 8)
+			is_blacks_turn = not is_blacks_turn
+			util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
+win.onclick(click_handler)  # noqa: E305 (two lines around top-level defs) - ↓
+# function defined only due to Python's insistence to not allow inline function definitions except as exceedingly restricted lambdas.
 
 win.listen()
 win.mainloop()

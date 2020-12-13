@@ -64,7 +64,7 @@ def create_full_board(screen):
 	return [
 		[create_piece(screen, 'light', piece) for piece in end_rows],
 		[create_piece(screen, 'light', 'pawn') for _ in range(8)]
-	] + ([[None] * 8] * 4) + [
+	] + [[None for __ in range(8)] for _ in range(4)] + [
 		[create_piece(screen, 'dark', 'pawn') for _ in range(8)],
 		[create_piece(screen, 'dark', piece) for piece in end_rows]
 	]
@@ -109,3 +109,13 @@ def update_piece_indicators(writer, font, taken_pieces, indicators):
 		x, y = indicators['dark'][piece].pos()
 		writer.goto(x, y + 40 - font[1] * 1.5)  # vertically center
 		writer.write(taken_pieces['dark'][piece], move=False, align='center', font=font)
+
+
+def update_selection(trtl, coord, board_size):
+	if coord is None:
+		trtl.hideturtle()
+	else:
+		board_edge = board_size / 2
+		square_size = board_size / 8
+		trtl.goto(-board_edge + (coord[0] + 0.5) * square_size, board_edge - (coord[1] + 0.5) * square_size)
+		trtl.showturtle()

@@ -1,3 +1,6 @@
+import util
+
+
 def convert_file_to_name(file):
 	return file.split('/')[2].replace('.gif', '')
 def convert_file_to_color(file):  # noqa: E302 (two lines between base-level definitions) - these functions are twins
@@ -87,3 +90,24 @@ def move_is_valid(turtle_arr, from_pos, to_pos):
 		elif abs(x_diff) == 1 and not dest_empty:  # capture
 			return True
 		return False  # fall through
+
+
+selection_coord = None  # no selection
+def onclick(selection_trtl, is_blacks_turn, piece_arr, x, y, board_size):  # noqa: E302 (two lines around top-level defs) - related
+	# NOTE: the x and y arguments are ints from 0 to 7 as opposed to raw coords.
+	global selection_coord
+	if selection_coord is None:  # no selection
+		if piece_arr[y][x] is not None:  # make sure we're actually selecting something
+			if ('dark' in piece_arr[y][x].shape()) ^ is_blacks_turn: return  # exit if the selection was not correct based on whose turn it is
+			selection_coord = (x, y)
+	elif selection_coord[0] != x or selection_coord[1] != y:  # selection, should now move (but make sure the selection is in a different place)
+		if move_is_valid(piece_arr, selection_coord, (x, y)):
+			killed_piece = piece_arr[y][x]
+			piece_arr[y][x] = piece_arr[selection_coord[1]][selection_coord[0]]
+			piece_arr[selection_coord[1]][selection_coord[0]] = None
+			selection_coord = None
+			util.update_selection(selection_trtl, selection_coord, board_size)
+			return killed_piece, piece_arr
+	else:  # double click, just cancel the selection
+		selection_coord = None
+	util.update_selection(selection_trtl, selection_coord, board_size)
