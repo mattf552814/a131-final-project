@@ -4,7 +4,7 @@ from pathlib import Path
 colors = ['dark', 'light']
 shapes = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn']
 
-end_rows = ['rook', 'knight', 'bishop', 'king', 'queen', 'bishop', 'knight', 'rook']
+end_rows = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook']
 
 
 def register_piece_shapes(screen):
