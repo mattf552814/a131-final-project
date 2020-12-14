@@ -23,10 +23,23 @@ class RecordedMove:
 			f'{"x" if self.was_capture else ""}{alphabet[self.to_pos[0]]}{8 - self.to_pos[1]}')
 
 
+class RecordedCastle:
+	def __init__(self, color, is_kingside):
+		self.color = color
+		self.is_kingside = is_kingside
+
+	def __str__(self):
+		return '0-0' if self.is_kingside else '0-0-0'
+
+
 def convert_file_to_name(file):
 	return file.split('/')[2].replace('.gif', '')
 def convert_file_to_color(file):  # noqa: E302 (two lines between base-level definitions) - these functions are twins
 	return file.split('/')[1]
+
+
+def has_moved(trtl):
+	return trtl.heading() != 0  # it's very hacky, but set the turtle's heading to something other than 0 when it's moved
 
 
 def convert_to_piece_types(turtle_arr):
@@ -66,7 +79,15 @@ def move_is_valid(turtle_arr, from_pos, to_pos):
 	color_arr, piece_arr = convert_to_piece_types(turtle_arr)
 	moving_piece = piece_arr[from_y][from_x]  # indexed by y and then x
 	is_light = color_arr[from_y][from_x] == 'light'  # ^
-	if color_arr[from_y][from_x] == color_arr[to_y][to_x]: return False
+	if color_arr[from_y][from_x] == color_arr[to_y][to_x]:  # only allowed when castling
+		if (
+			((moving_piece == 'king' and piece_arr[to_y][to_x] == 'rook') or (moving_piece == 'rook' and piece_arr[to_y][to_x] == 'king'))  # check piece types
+			and (not has_moved(turtle_arr[from_y][from_x]) and not has_moved(turtle_arr[to_y][to_x]))  # the rook and king can't have been moved
+			and check_horizontal_move_for_pieces(piece_arr, from_y, from_x, to_x)  # make sure space between rook and king
+		):
+			return 'castle'  # must be a special condition
+		else:
+			return False
 	x_diff = to_x - from_x
 	y_diff = to_y - from_y
 	assert x_diff != 0 or y_diff != 0  # no non-moves
@@ -123,21 +144,40 @@ def onclick(selection_trtl, is_blacks_turn, piece_arr, x, y, board_size):  # noq
 			if ('dark' in piece_arr[y][x].shape()) ^ is_blacks_turn: return  # exit if the selection was not correct based on whose turn it is
 			selection_coord = (x, y)
 	elif selection_coord[0] != x or selection_coord[1] != y:  # selection, should now move (but make sure the selection is in a different place)
-		if move_is_valid(piece_arr, selection_coord, (x, y)):
-			killed_piece = piece_arr[y][x]
-			moving_shape = piece_arr[selection_coord[1]][selection_coord[0]].shape()
-			move_obj = RecordedMove(
-				convert_file_to_color(moving_shape),
-				convert_file_to_name(moving_shape),
-				selection_coord,
-				(x, y),
-				killed_piece is not None  # true if a piece was captured
-			)
-			piece_arr[y][x] = piece_arr[selection_coord[1]][selection_coord[0]]
-			piece_arr[selection_coord[1]][selection_coord[0]] = None
-			selection_coord = None
-			util.update_selection(selection_trtl, selection_coord, board_size)
-			return killed_piece, piece_arr, move_obj
+		result_of_check = move_is_valid(piece_arr, selection_coord, (x, y))
+		if result_of_check is not False:
+			if result_of_check == 'castle':
+				selected_piece = piece_arr[y][x].shape()
+				move_color = convert_file_to_color(selected_piece)
+				if convert_file_to_name(selected_piece) == 'rook':
+					is_kingside = x == 7
+				else:
+					is_kingside = selection_coord[0] == 7
+				if is_kingside:
+					piece_arr[y][6], piece_arr[y][4] = piece_arr[y][4], None  # move king
+					piece_arr[y][5], piece_arr[y][7] = piece_arr[y][7], None  # move rook
+				else:  # queenside
+					piece_arr[y][2], piece_arr[y][4] = piece_arr[y][4], None  # move king
+					piece_arr[y][3], piece_arr[y][0] = piece_arr[y][0], None  # move rook
+				selection_coord = None
+				util.update_selection(selection_trtl, selection_coord, board_size)
+				return None, piece_arr, RecordedCastle(move_color, is_kingside)
+			else:
+				killed_piece = piece_arr[y][x]
+				moving_shape = piece_arr[selection_coord[1]][selection_coord[0]].shape()
+				move_obj = RecordedMove(
+					convert_file_to_color(moving_shape),
+					convert_file_to_name(moving_shape),
+					selection_coord,
+					(x, y),
+					killed_piece is not None  # true if a piece was captured
+				)
+				piece_arr[y][x] = piece_arr[selection_coord[1]][selection_coord[0]]
+				piece_arr[y][x].seth(10)  # record that the piece was moved (very hacky method)
+				piece_arr[selection_coord[1]][selection_coord[0]] = None
+				selection_coord = None
+				util.update_selection(selection_trtl, selection_coord, board_size)
+				return killed_piece, piece_arr, move_obj
 	else:  # double click, just cancel the selection
 		selection_coord = None
 	util.update_selection(selection_trtl, selection_coord, board_size)
