@@ -23,6 +23,15 @@ class RecordedMove:
 			f'{"x" if self.was_capture else ""}{alphabet[self.to_pos[0]]}{8 - self.to_pos[1]}')
 
 
+class RecordedCastle:
+	def __init__(self, color, is_kingside):
+		self.color = color
+		self.is_kingside = is_kingside
+
+	def __str__(self):
+		return '0-0' if self.is_kingside else '0-0-0'
+
+
 def convert_file_to_name(file):
 	return file.split('/')[2].replace('.gif', '')
 def convert_file_to_color(file):  # noqa: E302 (two lines between base-level definitions) - these functions are twins
@@ -138,7 +147,21 @@ def onclick(selection_trtl, is_blacks_turn, piece_arr, x, y, board_size):  # noq
 		result_of_check = move_is_valid(piece_arr, selection_coord, (x, y))
 		if result_of_check is not False:
 			if result_of_check == 'castle':
-				print('castle')
+				selected_piece = piece_arr[y][x].shape()
+				move_color = convert_file_to_color(selected_piece)
+				if convert_file_to_name(selected_piece) == 'rook':
+					is_kingside = x == 7
+				else:
+					is_kingside = selection_coord[0] == 7
+				if is_kingside:
+					piece_arr[y][6], piece_arr[y][4] = piece_arr[y][4], None  # move king
+					piece_arr[y][5], piece_arr[y][7] = piece_arr[y][7], None  # move rook
+				else:  # queenside
+					piece_arr[y][2], piece_arr[y][4] = piece_arr[y][4], None  # move king
+					piece_arr[y][3], piece_arr[y][0] = piece_arr[y][0], None  # move rook
+				selection_coord = None
+				util.update_selection(selection_trtl, selection_coord, board_size)
+				return None, piece_arr, RecordedCastle(move_color, is_kingside)
 			else:
 				killed_piece = piece_arr[y][x]
 				moving_shape = piece_arr[selection_coord[1]][selection_coord[0]].shape()
