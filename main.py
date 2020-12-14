@@ -41,6 +41,9 @@ selection_indicator.hideturtle()
 selection_indicator.up()
 
 
+move_record = []
+
+
 def click_handler(x, y):
 	global selection_indicator, board, is_blacks_turn, taken_pieces
 	board_edge = board_size / 2
@@ -54,7 +57,8 @@ def click_handler(x, y):
 			min(7, int((-y + board_edge) // square_size)),  # y calculation sometimes returns 8, so max out at 7
 			board_size)
 		if ret is not None:  # a move was made
-			killed_piece, board = ret
+			killed_piece, board, resulting_move = ret
+			move_record.append(resulting_move)
 			if killed_piece is not None:
 				util.move_board_pieces(board, board_size, board_size / 8)
 				killed_color = logic.convert_file_to_color(killed_piece.shape())
@@ -69,6 +73,7 @@ def click_handler(x, y):
 			util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
 win.onclick(click_handler)  # noqa: E305 (two lines around top-level defs) - ↓
 # function defined only due to Python's insistence to not allow inline function definitions except as exceedingly restricted lambdas.
+win.onkeypress(lambda: logic.print_history(move_record), 'h')
 
 win.listen()
 win.mainloop()
