@@ -5,6 +5,7 @@ colors = ['dark', 'light']
 shapes = ['king', 'queen', 'rook', 'bishop', 'knight', 'pawn']
 
 end_rows = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'rook']
+promotable_to = ['rook', 'knight', 'bishop', 'queen']
 
 
 def register_piece_shapes(screen):
