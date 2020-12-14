@@ -1,4 +1,5 @@
 import util
+import turtle
 from string import ascii_lowercase as alphabet
 
 
@@ -12,15 +13,17 @@ class RecordedMove:
 		'pawn': ''
 	}
 
-	def __init__(self, color, piece, from_pos, to_pos, was_capture):
+	def __init__(self, color, piece, from_pos, to_pos, was_capture, promotion):
 		self.piece = (color, piece)
 		self.from_pos = from_pos
 		self.to_pos = to_pos
 		self.was_capture = was_capture
+		self.promotion = promotion
 
 	def __str__(self):
 		return (f'{self.piece_characters[self.piece[1]]}{alphabet[self.from_pos[0]]}{8 - self.from_pos[1]}'
-			f'{"x" if self.was_capture else ""}{alphabet[self.to_pos[0]]}{8 - self.to_pos[1]}')
+			f'{"x" if self.was_capture else ""}{alphabet[self.to_pos[0]]}{8 - self.to_pos[1]}'
+			f'{f"={self.piece_characters[self.promotion]}" if self.promotion is not None else ""}')
 
 
 class RecordedCastle:
@@ -124,14 +127,15 @@ def move_is_valid(turtle_arr, from_pos, to_pos):
 	elif moving_piece == 'pawn':
 		# a bit more complicated, since color, position, and capturing must be considered.
 		dest_empty = piece_arr[to_y][to_x] is None
+		promoting = to_y == (7 if is_light else 0)
 		if x_diff == 0:  # non-capture
 			if y_diff == (1 if is_light else -1):  # normal move
-				return dest_empty  # only valid for non-capturing moves
+				return ('promotion' if promoting else True) if dest_empty else False  # only valid for non-capturing moves
 			elif y_diff == (2 if is_light else -2) and from_y == (1 if is_light else 6):  # double jump at start
-				return dest_empty and piece_arr[to_y - (1 if is_light else -1)][to_x] is None  # can't jump or capture
+				return ('promotion' if promoting else True) if (dest_empty and piece_arr[to_y - (1 if is_light else -1)][to_x] is None) else False  # can't jump or capture
 			return False  # fall through
 		elif abs(x_diff) == 1 and not dest_empty:  # capture
-			return True
+			return 'promotion' if promoting else True
 		return False  # fall through
 
 
@@ -163,6 +167,13 @@ def onclick(selection_trtl, is_blacks_turn, piece_arr, x, y, board_size):  # noq
 				util.update_selection(selection_trtl, selection_coord, board_size)
 				return None, piece_arr, RecordedCastle(move_color, is_kingside)
 			else:
+				promoting = result_of_check == 'promotion'
+				if promoting:
+					promotion = ''
+					while promotion not in util.promotable_to:
+						choice = turtle.textinput('Pawn Promotion', 'Choose the piece you want to promote to: Rook, Knight, Bishop, or Queen. To cancel the move, press Cancel.')
+						if choice is None: return  # if the promotion is cancelled, undo the move.
+						else: promotion = choice.lower()  # ignore case
 				killed_piece = piece_arr[y][x]
 				moving_shape = piece_arr[selection_coord[1]][selection_coord[0]].shape()
 				move_obj = RecordedMove(
@@ -170,8 +181,12 @@ def onclick(selection_trtl, is_blacks_turn, piece_arr, x, y, board_size):  # noq
 					convert_file_to_name(moving_shape),
 					selection_coord,
 					(x, y),
-					killed_piece is not None  # true if a piece was captured
+					killed_piece is not None,  # true if a piece was captured
+					promotion if promoting else None  # provide the name of the piece in case of promotion
 				)
+				if promoting:
+					old_shape = piece_arr[selection_coord[1]][selection_coord[0]].shape()
+					piece_arr[selection_coord[1]][selection_coord[0]].shape(old_shape.replace('pawn', promotion))
 				piece_arr[y][x] = piece_arr[selection_coord[1]][selection_coord[0]]
 				piece_arr[y][x].seth(10)  # record that the piece was moved (very hacky method)
 				piece_arr[selection_coord[1]][selection_coord[0]] = None
