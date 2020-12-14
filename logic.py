@@ -1,4 +1,26 @@
 import util
+from string import ascii_lowercase as alphabet
+
+
+class RecordedMove:
+	piece_characters = {
+		'king': 'K',
+		'queen': 'Q',
+		'rook': 'R',
+		'bishop': 'B',
+		'knight': 'N',
+		'pawn': ''
+	}
+
+	def __init__(self, color, piece, from_pos, to_pos, was_capture):
+		self.piece = (color, piece)
+		self.from_pos = from_pos
+		self.to_pos = to_pos
+		self.was_capture = was_capture
+
+	def __str__(self):
+		return (f'{self.piece_characters[self.piece[1]]}{alphabet[self.from_pos[0]]}{8 - self.from_pos[1]}'
+			f'{"x" if self.was_capture else ""}{alphabet[self.to_pos[0]]}{8 - self.to_pos[1]}')
 
 
 def convert_file_to_name(file):
@@ -103,11 +125,25 @@ def onclick(selection_trtl, is_blacks_turn, piece_arr, x, y, board_size):  # noq
 	elif selection_coord[0] != x or selection_coord[1] != y:  # selection, should now move (but make sure the selection is in a different place)
 		if move_is_valid(piece_arr, selection_coord, (x, y)):
 			killed_piece = piece_arr[y][x]
+			moving_shape = piece_arr[selection_coord[1]][selection_coord[0]].shape()
+			move_obj = RecordedMove(
+				convert_file_to_color(moving_shape),
+				convert_file_to_name(moving_shape),
+				selection_coord,
+				(x, y),
+				killed_piece is not None  # true if a piece was captured
+			)
 			piece_arr[y][x] = piece_arr[selection_coord[1]][selection_coord[0]]
 			piece_arr[selection_coord[1]][selection_coord[0]] = None
 			selection_coord = None
 			util.update_selection(selection_trtl, selection_coord, board_size)
-			return killed_piece, piece_arr
+			return killed_piece, piece_arr, move_obj
 	else:  # double click, just cancel the selection
 		selection_coord = None
 	util.update_selection(selection_trtl, selection_coord, board_size)
+
+
+def print_history(history):
+	print('History:')
+	for i, move_pair in enumerate(util.chunk(history, 2)):
+		print(f' {i+1}. {str(move_pair[0])}  {str(move_pair[1]) if len(move_pair) == 2 else ""}')

@@ -119,3 +119,17 @@ def update_selection(trtl, coord, board_size):
 		square_size = board_size / 8
 		trtl.goto(-board_edge + (coord[0] + 0.5) * square_size, board_edge - (coord[1] + 0.5) * square_size)
 		trtl.showturtle()
+
+
+def chunk(iterator, n):
+	iterator = iter(iterator)
+	while True:
+		yield_arr = []
+		try:
+			for _ in range(n):
+				yield_arr.append(next(iterator))
+		except StopIteration:
+			if len(yield_arr) > 0:
+				yield yield_arr
+			break
+		yield yield_arr
