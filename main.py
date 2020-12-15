@@ -19,7 +19,7 @@ board_turtle.speed(10)
 is_blacks_turn = False  # false means it's white's turn
 
 FONT_SIZE = 20
-FONT = ('PT Sans', FONT_SIZE, 'normal')
+FONT = ('sans-serif', FONT_SIZE, 'normal')
 
 util.register_piece_shapes(win)
 
@@ -52,7 +52,7 @@ def restart_program():  # noqa: E302 (two lines before function) - Should be an 
 	gc.collect()  # remove the old turtle completely
 	taken_pieces = {color: {shape: 0 for shape in util.shapes} for color in util.colors}
 	util.move_board_pieces(board, board_size, board_size / 8)
-	util.update_piece_indicators(indicators_writer, ('PT Sans', 10, 'normal'), taken_pieces, taken_indicators)
+	util.update_piece_indicators(indicators_writer, ('sans-serif', 10, 'normal'), taken_pieces, taken_indicators)
 	move_record = []
 	is_blacks_turn = False
 	util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
@@ -71,7 +71,7 @@ indicators_writer.speed('fastest')
 taken_indicators = util.create_taken_piece_indicator(win)
 
 util.move_piece_indicators(board_size, taken_indicators)
-util.update_piece_indicators(indicators_writer, ('PT Sans', 10, 'normal'), taken_pieces, taken_indicators)
+util.update_piece_indicators(indicators_writer, ('sans-serif', 10, 'normal'), taken_pieces, taken_indicators)
 
 win.register_shape('selection.gif')
 selection_indicator = turtle.Turtle(shape='selection.gif')
@@ -109,7 +109,7 @@ def click_handler(x, y):
 				taken_pieces[killed_color][killed_piece_name] += 1
 				is_blacks_turn = not is_blacks_turn
 				util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
-				util.update_piece_indicators(indicators_writer, ('PT Sans', 10, 'normal'), taken_pieces, taken_indicators)
+				util.update_piece_indicators(indicators_writer, ('sans-serif', 10, 'normal'), taken_pieces, taken_indicators)
 			else:
 				util.move_board_pieces(board, board_size, board_size / 8)
 				is_blacks_turn = not is_blacks_turn
