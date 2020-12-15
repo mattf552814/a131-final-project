@@ -16,6 +16,7 @@ util.register_piece_shapes(win)
 turn_indicator = turtle.Turtle()
 turn_indicator.hideturtle()
 turn_indicator.up()
+turn_indicator.speed('fastest')
 util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
 
 board_size = 600
@@ -29,6 +30,7 @@ util.move_board_pieces(board, board_size, board_size / 8)
 indicators_writer = turtle.Turtle()
 indicators_writer.hideturtle()
 indicators_writer.up()
+indicators_writer.speed('fastest')
 taken_indicators = util.create_taken_piece_indicator(win)
 
 util.move_piece_indicators(board_size, taken_indicators)
@@ -66,11 +68,13 @@ def click_handler(x, y):
 				killed_piece.goto(taken_indicators[killed_color][killed_piece_name].pos())
 				killed_piece.hideturtle()
 				taken_pieces[killed_color][killed_piece_name] += 1
+				is_blacks_turn = not is_blacks_turn
+				util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
 				util.update_piece_indicators(indicators_writer, ('PT Sans', 10, 'normal'), taken_pieces, taken_indicators)
 			else:
 				util.move_board_pieces(board, board_size, board_size / 8)
-			is_blacks_turn = not is_blacks_turn
-			util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
+				is_blacks_turn = not is_blacks_turn
+				util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
 win.onclick(click_handler)  # noqa: E305 (two lines around top-level defs) - ↓
 # function defined only due to Python's insistence to not allow inline function definitions except as exceedingly restricted lambdas.
 win.onkeypress(lambda: logic.print_history(move_record), 'h')
