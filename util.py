@@ -81,7 +81,7 @@ def move_board_pieces(board, board_size, square_size):
 	for y in range(8):
 		for x in range(8):
 			item = board[y][x]
-			if item is not None:
+			if isinstance(item, turtle.Turtle):
 				item.goto(piece_start_x + square_size * x, piece_start_y - square_size * y)
 
 

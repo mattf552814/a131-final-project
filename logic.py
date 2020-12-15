@@ -23,7 +23,7 @@ class RecordedMove:
 	def __str__(self):
 		return (f'{self.piece_characters[self.piece[1]]}{alphabet[self.from_pos[0]]}{8 - self.from_pos[1]}'
 			f'{"x" if self.was_capture else ""}{alphabet[self.to_pos[0]]}{8 - self.to_pos[1]}'
-			f'{f"={self.piece_characters[self.promotion]}" if self.promotion is not None else ""}')
+			f'{f"={self.piece_characters[self.promotion]}" if isinstance(self.promotion, turtle.Turtle) else ""}')
 
 
 class RecordedCastle:
@@ -47,8 +47,8 @@ def has_moved(trtl):
 
 def convert_to_piece_types(turtle_arr):
 	return (
-		[[(None if piece is None else convert_file_to_color(piece.shape())) for piece in row] for row in turtle_arr],
-		[[(None if piece is None else convert_file_to_name(piece.shape())) for piece in row] for row in turtle_arr]
+		[[(convert_file_to_color(piece.shape()) if isinstance(piece, turtle.Turtle) else None) for piece in row] for row in turtle_arr],
+		[[(convert_file_to_name(piece.shape()) if isinstance(piece, turtle.Turtle) else None) for piece in row] for row in turtle_arr]
 	)
 
 
@@ -56,13 +56,13 @@ def check_vertical_move_for_pieces(piece_arr, x_cor, from_y, to_y):
 	# step from one beyond the start position to one before the end position. Automatically does nothing if the move is only one.
 	y_diff = to_y - from_y
 	for y_cor in range(from_y + (1 if y_diff > 0 else -1), to_y, 1 if y_diff > 0 else -1):
-		if piece_arr[y_cor][x_cor] is not None: return False  # piece obstructing path
+		if isinstance(piece_arr[y_cor][x_cor], turtle.Turtle): return False  # piece obstructing path
 	return True
 def check_horizontal_move_for_pieces(piece_arr, y_cor, from_x, to_x):  # noqa: E302 (two lines between base-level definitions) - these functions are triplets
 	# see above for explanation
 	x_diff = to_x - from_x
 	for x_cor in range(from_x + (1 if x_diff > 0 else -1), to_x, 1 if x_diff > 0 else -1):
-		if piece_arr[y_cor][x_cor] is not None: return False  # piece obstructing path
+		if isinstance(piece_arr[y_cor][x_cor], turtle.Turtle): return False  # piece obstructing path
 	return True
 def check_diagonal_move_for_pieces(piece_arr, from_x, to_x, from_y, to_y):  # noqa: E302 (two lines between base-level definitions) - (see above)
 	x_diff = to_x - from_x
@@ -71,7 +71,7 @@ def check_diagonal_move_for_pieces(piece_arr, from_x, to_x, from_y, to_y):  # no
 		range(from_x + (1 if x_diff > 0 else -1), to_x, 1 if x_diff > 0 else -1),  # code from above
 		range(from_y + (1 if y_diff > 0 else -1), to_y, 1 if y_diff > 0 else -1)  # also from above
 	):  # move in that diagonal line
-		if piece_arr[y_cor][x_cor] is not None: return False
+		if isinstance(piece_arr[y_cor][x_cor], turtle.Turtle): return False
 	return True
 
 
@@ -144,7 +144,7 @@ def onclick(selection_trtl, is_blacks_turn, piece_arr, x, y, board_size):  # noq
 	# NOTE: the x and y arguments are ints from 0 to 7 as opposed to raw coords.
 	global selection_coord
 	if selection_coord is None:  # no selection
-		if piece_arr[y][x] is not None:  # make sure we're actually selecting something
+		if isinstance(piece_arr[y][x], turtle.Turtle):  # make sure we're actually selecting something
 			if ('dark' in piece_arr[y][x].shape()) ^ is_blacks_turn: return  # exit if the selection was not correct based on whose turn it is
 			selection_coord = (x, y)
 	elif selection_coord[0] != x or selection_coord[1] != y:  # selection, should now move (but make sure the selection is in a different place)
@@ -181,7 +181,7 @@ def onclick(selection_trtl, is_blacks_turn, piece_arr, x, y, board_size):  # noq
 					convert_file_to_name(moving_shape),
 					selection_coord,
 					(x, y),
-					killed_piece is not None,  # true if a piece was captured
+					isinstance(killed_piece, turtle.Turtle),  # true if a piece was captured
 					promotion if promoting else None  # provide the name of the piece in case of promotion
 				)
 				if promoting:
