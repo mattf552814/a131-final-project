@@ -35,6 +35,11 @@ class RecordedCastle:
 		return '0-0' if self.is_kingside else '0-0-0'
 
 
+class PassantReference:
+	def __init__(self, trtl):
+		self.trtl = trtl
+
+
 def convert_file_to_name(file):
 	return file.split('/')[2].replace('.gif', '')
 def convert_file_to_color(file):  # noqa: E302 (two lines between base-level definitions) - these functions are twins
@@ -73,6 +78,10 @@ def check_diagonal_move_for_pieces(piece_arr, from_x, to_x, from_y, to_y):  # no
 	):  # move in that diagonal line
 		if isinstance(piece_arr[y_cor][x_cor], turtle.Turtle): return False
 	return True
+
+
+def strip_passant_references(arr):
+	return [[(None if isinstance(piece, PassantReference) else piece) for piece in row] for row in arr]
 
 
 def move_is_valid(turtle_arr, from_pos, to_pos):
@@ -126,15 +135,25 @@ def move_is_valid(turtle_arr, from_pos, to_pos):
 		return False  # fall through if the move is not diagonal.
 	elif moving_piece == 'pawn':
 		# a bit more complicated, since color, position, and capturing must be considered.
-		dest_empty = piece_arr[to_y][to_x] is None
+		dest_empty = not isinstance(piece_arr[to_y][to_x], (turtle.Turtle, PassantReference))  # en passant references must not be considered empty squares here
 		promoting = to_y == (7 if is_light else 0)
 		if x_diff == 0:  # non-capture
 			if y_diff == (1 if is_light else -1):  # normal move
 				return ('promotion' if promoting else True) if dest_empty else False  # only valid for non-capturing moves
 			elif y_diff == (2 if is_light else -2) and from_y == (1 if is_light else 6):  # double jump at start
-				return ('promotion' if promoting else True) if (dest_empty and piece_arr[to_y - (1 if is_light else -1)][to_x] is None) else False  # can't jump or capture
+				return 'make-passant' if (dest_empty and piece_arr[to_y - (1 if is_light else -1)][to_x] is None) else False  # can't jump or capture
 			return False  # fall through
-		elif abs(x_diff) == 1 and not dest_empty and y_diff == (1 if is_light else -1):  # capture
+		elif (
+			abs(x_diff) == 1  # the move moves horizontally by one (combined with the below statements, verifies that the move is diagonal)
+			and not dest_empty  # this is a capture (or en passant, see the initialization of dest_empty)
+			and (  # checking for a valid capture
+				(y_diff == (1 if is_light else -1))  # normal capture
+				or (  # en passant capture
+					isinstance(piece_arr[to_y][to_x], PassantReference)  # make sure the spot to be captured is an en passant reference
+					and y_diff == (-1 if is_light else 1)  # make sure that the move is a reverse diagonal (combined with the first line in this whole statement)
+				)
+			)
+		):  # capture
 			return 'promotion' if promoting else True
 		return False  # fall through
 
@@ -168,6 +187,7 @@ def onclick(selection_trtl, is_blacks_turn, piece_arr, x, y, board_size):  # noq
 				return None, piece_arr, RecordedCastle(move_color, is_kingside)
 			else:
 				promoting = result_of_check == 'promotion'
+				make_passant = result_of_check == 'make-passant'
 				if promoting:
 					promotion = ''
 					while promotion not in util.promotable_to:
@@ -175,6 +195,7 @@ def onclick(selection_trtl, is_blacks_turn, piece_arr, x, y, board_size):  # noq
 						if choice is None: return  # if the promotion is cancelled, undo the move.
 						else: promotion = choice.lower()  # ignore case
 				killed_piece = piece_arr[y][x]
+				if isinstance(killed_piece, PassantReference): killed_piece = killed_piece.trtl
 				moving_shape = piece_arr[selection_coord[1]][selection_coord[0]].shape()
 				move_obj = RecordedMove(
 					convert_file_to_color(moving_shape),
@@ -189,6 +210,9 @@ def onclick(selection_trtl, is_blacks_turn, piece_arr, x, y, board_size):  # noq
 					piece_arr[selection_coord[1]][selection_coord[0]].shape(old_shape.replace('pawn', promotion))
 				piece_arr[y][x] = piece_arr[selection_coord[1]][selection_coord[0]]
 				piece_arr[y][x].seth(10)  # record that the piece was moved (very hacky method)
+				piece_arr = strip_passant_references(piece_arr)
+				if make_passant:
+					piece_arr[5 if is_blacks_turn else 2][x] = PassantReference(piece_arr[y][x])
 				piece_arr[selection_coord[1]][selection_coord[0]] = None
 				selection_coord = None
 				util.update_selection(selection_trtl, selection_coord, board_size)
