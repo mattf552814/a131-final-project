@@ -8,6 +8,12 @@ end_rows = ['rook', 'knight', 'bishop', 'queen', 'king', 'bishop', 'knight', 'ro
 promotable_to = ['rook', 'knight', 'bishop', 'queen']
 
 
+def setup_internal_turtle(trtl):
+	trtl.penup()
+	trtl.hideturtle()
+	trtl.speed(0)
+
+
 def register_piece_shapes(screen):
 	for color in colors:
 		for shape in shapes:
@@ -100,16 +106,17 @@ def move_piece_indicators(board_size, indicators):
 		indicators['dark'][piece].goto(start + (i * step), y_cor)
 
 
+def update_piece_indicator(writer, font, number, x, y):
+	writer.goto(x, y - font[1] * 1.5)  # vertically center
+	writer.write(str(number), move=False, align='center', font=font)
+
+
 def update_piece_indicators(writer, font, taken_pieces, indicators):
 	writer.clear()
 	for piece in indicators['light']:
-		x, y = indicators['light'][piece].pos()
-		writer.goto(x, y - 40 - font[1] * 1.5)  # vertically center
-		writer.write(taken_pieces['light'][piece], move=False, align='center', font=font)
+		update_piece_indicator(writer, font, taken_pieces['light'][piece], indicators['light'][piece].xcor(), indicators['light'][piece].ycor() - 40)
 	for piece in indicators['dark']:
-		x, y = indicators['dark'][piece].pos()
-		writer.goto(x, y + 40 - font[1] * 1.5)  # vertically center
-		writer.write(taken_pieces['dark'][piece], move=False, align='center', font=font)
+		update_piece_indicator(writer, font, taken_pieces['dark'][piece], indicators['dark'][piece].xcor(), indicators['dark'][piece].ycor() + 40)
 
 
 def update_selection(trtl, coord, board_size):

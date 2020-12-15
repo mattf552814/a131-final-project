@@ -24,18 +24,14 @@ FONT = ('sans-serif', FONT_SIZE, 'normal')
 util.register_piece_shapes(win)
 
 turn_indicator = turtle.Turtle()
-turn_indicator.hideturtle()
-turn_indicator.up()
-turn_indicator.speed('fastest')
+util.setup_internal_turtle(turn_indicator)
 util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
 
 board_size = 600
 
 win.register_shape('restart_button.gif')
 restart_button = turtle.Turtle(shape='restart_button.gif')
-restart_button.penup()
-restart_button.hideturtle()  # don't show the restart button until everything is initialized
-restart_button.speed(0)
+util.setup_internal_turtle(restart_button)
 restart_button.goto(-(board_size / 2) - 100, 0)
 def restart_program():  # noqa: E302 (two lines before function) - Should be an anonymous fn
 	global board, taken_pieces, indicators_writer, taken_indicators, move_record, is_blacks_turn, turn_indicator, logic
@@ -65,9 +61,7 @@ taken_pieces = {color: {shape: 0 for shape in util.shapes} for color in util.col
 util.move_board_pieces(board, board_size, board_size / 8)
 
 indicators_writer = turtle.Turtle()
-indicators_writer.hideturtle()
-indicators_writer.up()
-indicators_writer.speed('fastest')
+util.setup_internal_turtle(indicators_writer)
 taken_indicators = util.create_taken_piece_indicator(win)
 
 util.move_piece_indicators(board_size, taken_indicators)
@@ -75,9 +69,7 @@ util.update_piece_indicators(indicators_writer, ('sans-serif', 10, 'normal'), ta
 
 win.register_shape('selection.gif')
 selection_indicator = turtle.Turtle(shape='selection.gif')
-selection_indicator.speed(0)
-selection_indicator.hideturtle()
-selection_indicator.up()
+util.setup_internal_turtle(selection_indicator)
 
 restart_button.showturtle()  # don't show the restart button until everything is initialized
 

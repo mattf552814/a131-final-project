@@ -57,24 +57,24 @@ def convert_to_piece_types(turtle_arr):
 	)
 
 
-def check_vertical_move_for_pieces(piece_arr, x_cor, from_y, to_y):
+def exclusive_range(start, stop):
+	diff = stop - start
 	# step from one beyond the start position to one before the end position. Automatically does nothing if the move is only one.
-	y_diff = to_y - from_y
-	for y_cor in range(from_y + (1 if y_diff > 0 else -1), to_y, 1 if y_diff > 0 else -1):
+	return range(start + (1 if diff > 0 else -1), stop, 1 if diff > 0 else -1)
+
+
+def check_vertical_move_for_pieces(piece_arr, x_cor, from_y, to_y):
+	for y_cor in exclusive_range(from_y, to_y):
 		if isinstance(piece_arr[y_cor][x_cor], turtle.Turtle): return False  # piece obstructing path
 	return True
 def check_horizontal_move_for_pieces(piece_arr, y_cor, from_x, to_x):  # noqa: E302 (two lines between base-level definitions) - these functions are triplets
-	# see above for explanation
-	x_diff = to_x - from_x
-	for x_cor in range(from_x + (1 if x_diff > 0 else -1), to_x, 1 if x_diff > 0 else -1):
+	for x_cor in exclusive_range(from_x, to_x):
 		if isinstance(piece_arr[y_cor][x_cor], turtle.Turtle): return False  # piece obstructing path
 	return True
 def check_diagonal_move_for_pieces(piece_arr, from_x, to_x, from_y, to_y):  # noqa: E302 (two lines between base-level definitions) - (see above)
-	x_diff = to_x - from_x
-	y_diff = to_y - from_y
 	for (x_cor, y_cor) in zip(
-		range(from_x + (1 if x_diff > 0 else -1), to_x, 1 if x_diff > 0 else -1),  # code from above
-		range(from_y + (1 if y_diff > 0 else -1), to_y, 1 if y_diff > 0 else -1)  # also from above
+		exclusive_range(from_x, to_x),
+		exclusive_range(from_y, to_y)
 	):  # move in that diagonal line
 		if isinstance(piece_arr[y_cor][x_cor], turtle.Turtle): return False
 	return True
