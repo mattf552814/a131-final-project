@@ -48,7 +48,7 @@ def has_moved(trtl):
 def convert_to_piece_types(turtle_arr):
 	return (
 		[[(convert_file_to_color(piece.shape()) if isinstance(piece, turtle.Turtle) else None) for piece in row] for row in turtle_arr],
-		[[(convert_file_to_name(piece.shape()) if isinstance(piece, turtle.Turtle) else None) for piece in row] for row in turtle_arr]
+		[[(convert_file_to_name(piece.shape()) if isinstance(piece, turtle.Turtle) else piece) for piece in row] for row in turtle_arr]
 	)
 
 
