@@ -61,7 +61,7 @@ def click_handler(x, y):
 		if ret is not None:  # a move was made
 			killed_piece, board, resulting_move = ret
 			move_record.append(resulting_move)
-			if killed_piece is not None:
+			if isinstance(killed_piece, turtle.Turtle):
 				util.move_board_pieces(board, board_size, board_size / 8)
 				killed_color = logic.convert_file_to_color(killed_piece.shape())
 				killed_piece_name = logic.convert_file_to_name(killed_piece.shape())
