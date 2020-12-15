@@ -134,7 +134,7 @@ def move_is_valid(turtle_arr, from_pos, to_pos):
 			elif y_diff == (2 if is_light else -2) and from_y == (1 if is_light else 6):  # double jump at start
 				return ('promotion' if promoting else True) if (dest_empty and piece_arr[to_y - (1 if is_light else -1)][to_x] is None) else False  # can't jump or capture
 			return False  # fall through
-		elif abs(x_diff) == 1 and not dest_empty:  # capture
+		elif abs(x_diff) == 1 and not dest_empty and y_diff == (1 if is_light else -1):  # capture
 			return 'promotion' if promoting else True
 		return False  # fall through
 
