@@ -1,0 +1,17 @@
+ __        ___  __   __      __   ___  ___         ___  __
+/  ` |__| |__  /__` /__`    |__) |__  |__  | |\ | |__  |  \
+\__, |  | |___ .__/ .__/    |  \ |___ |    | | \| |___ |__/
+
+By Matt Fellenz
+
+-- INSTRUCTIONS --
+ 0. Allow the game to initialize. This typically takes under 30 seconds.
+ 1. White must select a piece by clicking on it, then selecting the destination by clicking there.
+ 2. It is now black's turn. Black must also perform step 1.
+ 3. Enjoy the game!
+ 3. When the game is over (or there is a draw), either exit the window or click "Restart" to make a new game.
+
+View the history of the game by pressing H. The moves will be printed to the console. (You may notice that in some cases the notation is overly verbose.)
+Chess Refined strives to support the full rules of chess. Try moving a pawn to the last rank, and you will see a Pawn Promotion dialog. En passant captures and castling are also supported. To castle, select the rook and click on the king, or vice versa.
+
+Press Enter to continue to the game.
