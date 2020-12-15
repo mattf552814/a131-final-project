@@ -3,6 +3,15 @@ import logic
 import turtle
 import gc
 
+# -- PRINT INSTRUCTIONS
+
+with open('instructions.txt', 'r') as instructions_f:
+	for line in instructions_f:
+		print(line, end='')
+	input('')
+
+# -- BEGIN GAME
+
 win = turtle.Screen()
 board_turtle = turtle.Turtle()
 board_turtle.speed(10)
