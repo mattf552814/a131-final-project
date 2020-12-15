@@ -1,6 +1,7 @@
 import util
 import logic
 import turtle
+import gc
 
 win = turtle.Screen()
 board_turtle = turtle.Turtle()
@@ -20,6 +21,33 @@ turn_indicator.speed('fastest')
 util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
 
 board_size = 600
+
+win.register_shape('restart_button.gif')
+restart_button = turtle.Turtle(shape='restart_button.gif')
+restart_button.penup()
+restart_button.hideturtle()  # don't show the restart button until everything is initialized
+restart_button.speed(0)
+restart_button.goto(-(board_size / 2) - 100, 0)
+def restart_program():  # noqa: E302 (two lines before function) - Should be an anonymous fn
+	global board, taken_pieces, indicators_writer, taken_indicators, move_record, is_blacks_turn, turn_indicator, logic
+	logic.selection_coord = None
+	util.update_selection(selection_indicator, logic.selection_coord, board_size)
+	turn_indicator.clear()
+	indicators_writer.clear()
+	for row in board:
+		for piece in row:
+			if isinstance(piece, turtle.Turtle):
+				piece.hideturtle()
+				del piece
+	board = util.create_full_board(win)
+	gc.collect()  # remove the old turtle completely
+	taken_pieces = {color: {shape: 0 for shape in util.shapes} for color in util.colors}
+	util.move_board_pieces(board, board_size, board_size / 8)
+	util.update_piece_indicators(indicators_writer, ('PT Sans', 10, 'normal'), taken_pieces, taken_indicators)
+	move_record = []
+	is_blacks_turn = False
+	util.draw_turn_indicator(turn_indicator, is_blacks_turn, FONT, (0, 370))
+restart_button.onclick(lambda *_: restart_program())  # noqa: E305 (two lines after function) - Should be an anonymous fn
 
 util.draw_board(board_turtle, board_size)
 
@@ -41,6 +69,8 @@ selection_indicator = turtle.Turtle(shape='selection.gif')
 selection_indicator.speed(0)
 selection_indicator.hideturtle()
 selection_indicator.up()
+
+restart_button.showturtle()  # don't show the restart button until everything is initialized
 
 
 move_record = []
