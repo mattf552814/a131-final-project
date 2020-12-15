@@ -135,7 +135,7 @@ def move_is_valid(turtle_arr, from_pos, to_pos):
 		return False  # fall through if the move is not diagonal.
 	elif moving_piece == 'pawn':
 		# a bit more complicated, since color, position, and capturing must be considered.
-		dest_empty = not isinstance(piece_arr[to_y][to_x], (turtle.Turtle, PassantReference))  # en passant references must not be considered empty squares here
+		dest_empty = not isinstance(turtle_arr[to_y][to_x], (turtle.Turtle, PassantReference))  # en passant references must not be considered empty squares here
 		promoting = to_y == (7 if is_light else 0)
 		if x_diff == 0:  # non-capture
 			if y_diff == (1 if is_light else -1):  # normal move
@@ -146,13 +146,7 @@ def move_is_valid(turtle_arr, from_pos, to_pos):
 		elif (
 			abs(x_diff) == 1  # the move moves horizontally by one (combined with the below statements, verifies that the move is diagonal)
 			and not dest_empty  # this is a capture (or en passant, see the initialization of dest_empty)
-			and (  # checking for a valid capture
-				(y_diff == (1 if is_light else -1))  # normal capture
-				or (  # en passant capture
-					isinstance(piece_arr[to_y][to_x], PassantReference)  # make sure the spot to be captured is an en passant reference
-					and y_diff == (-1 if is_light else 1)  # make sure that the move is a reverse diagonal (combined with the first line in this whole statement)
-				)
-			)
+			and y_diff == (1 if is_light else -1)  # make sure move is correct direction
 		):  # capture
 			return 'promotion' if promoting else True
 		return False  # fall through
